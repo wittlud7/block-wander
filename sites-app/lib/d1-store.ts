@@ -1,0 +1,11 @@
+export function d1Store(db:D1Database){
+  const columns='date, player_id AS playerId, theme, moves, score, stars, hints, undos, achieved_at AS achievedAt';
+  const ranked=`SELECT ${columns}, ROW_NUMBER() OVER (ORDER BY moves,hints,undos,score DESC,achieved_at,player_id) AS rank FROM daily_ranks WHERE date=?`;
+  return{
+    async player(id:string){return db.prepare('SELECT id,name,created_at AS createdAt FROM players WHERE id=?').bind(id).first();},
+    async savePlayer(p:any){await db.prepare('INSERT INTO players(id,name,created_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name').bind(p.id,p.name,p.createdAt).run();},
+    async deletePlayer(id:string){await db.batch([db.prepare('DELETE FROM daily_ranks WHERE player_id=?').bind(id),db.prepare('DELETE FROM players WHERE id=?').bind(id)]);},
+    async saveRank(r:any){await db.prepare(`INSERT INTO daily_ranks(date,player_id,theme,moves,score,stars,hints,undos,achieved_at) VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(date,player_id) DO UPDATE SET theme=excluded.theme,moves=excluded.moves,score=excluded.score,stars=excluded.stars,hints=excluded.hints,undos=excluded.undos,achieved_at=excluded.achieved_at WHERE excluded.moves<daily_ranks.moves OR (excluded.moves=daily_ranks.moves AND excluded.hints<daily_ranks.hints) OR (excluded.moves=daily_ranks.moves AND excluded.hints=daily_ranks.hints AND excluded.undos<daily_ranks.undos) OR (excluded.moves=daily_ranks.moves AND excluded.hints=daily_ranks.hints AND excluded.undos=daily_ranks.undos AND excluded.score>daily_ranks.score)`).bind(r.date,r.playerId,r.theme,r.moves,r.score,r.stars,r.hints,r.undos,r.achievedAt).run();},
+    async standings(date:string,id:string){const [rows,mine,total]=await Promise.all([db.prepare(`SELECT ranked.*,players.name FROM (${ranked}) ranked JOIN players ON players.id=ranked.playerId ORDER BY rank LIMIT 100`).bind(date).all(),db.prepare(`SELECT ranked.*,players.name FROM (${ranked}) ranked JOIN players ON players.id=ranked.playerId WHERE ranked.playerId=?`).bind(date,id).first(),db.prepare('SELECT COUNT(*) AS n FROM daily_ranks WHERE date=?').bind(date).first<{n:number}>()]);return{date,total:total?.n||0,rows:rows.results,mine};}
+  };
+}

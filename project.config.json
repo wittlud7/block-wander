@@ -1,0 +1,139 @@
+{
+  "description": "方块漫游 · 真实馆藏消除 · 微信原生开发预览",
+  "compileType": "game",
+  "appid": "touristappid",
+  "projectname": "block-wander",
+  "setting": {
+    "es6": true,
+    "minified": true,
+    "urlCheck": true
+  },
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "web"
+      },
+      {
+        "type": "folder",
+        "value": "archive"
+      },
+      {
+        "type": "folder",
+        "value": "docs"
+      },
+      {
+        "type": "file",
+        "value": "shared/play.js"
+      },
+      {
+        "type": "folder",
+        "value": "assets/ink"
+      },
+      {
+        "type": "file",
+        "value": "assets/posters/PROMPTS.md"
+      },
+      {
+        "type": "file",
+        "value": "shared/engine.js"
+      },
+      {
+        "type": "file",
+        "value": "shared/journey.js"
+      },
+      {
+        "type": "file",
+        "value": "shared/render.js"
+      },
+      {
+        "type": "file",
+        "value": "assets/dawn.jpg"
+      },
+      {
+        "type": "file",
+        "value": "assets/tide.jpg"
+      },
+      {
+        "type": "file",
+        "value": "assets/night.jpg"
+      },
+      {
+        "type": "file",
+        "value": "assets/retro/PROMPTS.md"
+      },
+      {
+        "type": "folder",
+        "value": "scripts"
+      },
+      {
+        "type": "folder",
+        "value": "tests"
+      },
+      {
+        "type": "folder",
+        "value": "output"
+      },
+      {
+        "type": "folder",
+        "value": ".playwright-cli"
+      },
+      {
+        "type": "file",
+        "value": "index.html"
+      },
+      {
+        "type": "file",
+        "value": "package.json"
+      },
+      {
+        "type": "file",
+        "value": "README.md"
+      },
+      {
+        "type": "file",
+        "value": "assets/PROMPTS.md"
+      },
+      {
+        "type": "folder",
+        "value": "sites-app"
+      },
+      {
+        "type": "folder",
+        "value": "server"
+      },
+      {
+        "type": "folder",
+        "value": ".data"
+      },
+      {
+        "type": "folder",
+        "value": "assets/themes"
+      },
+      {
+        "type": "folder",
+        "value": "node_modules"
+      },
+      {
+        "type": "folder",
+        "value": ".git"
+      },
+      {
+        "type": "folder",
+        "value": ".github"
+      },
+      {
+        "type": "folder",
+        "value": "assets/editions"
+      },
+      {
+        "type": "folder",
+        "value": "assets/retro"
+      },
+      {
+        "type": "folder",
+        "value": "assets/posters"
+      }
+    ]
+  }
+}

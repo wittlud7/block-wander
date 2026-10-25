@@ -1,0 +1,3 @@
+import {sqliteTable,text,integer,primaryKey,index} from 'drizzle-orm/sqlite-core';
+export const players=sqliteTable('players',{id:text('id').primaryKey(),name:text('name').notNull(),createdAt:text('created_at').notNull()});
+export const dailyRanks=sqliteTable('daily_ranks',{date:text('date').notNull(),playerId:text('player_id').notNull().references(()=>players.id,{onDelete:'cascade'}),theme:text('theme').notNull(),moves:integer('moves').notNull(),score:integer('score').notNull(),stars:integer('stars').notNull(),hints:integer('hints').notNull(),undos:integer('undos').notNull(),achievedAt:text('achieved_at').notNull()},t=>[primaryKey({columns:[t.date,t.playerId]}),index('daily_order').on(t.date,t.moves,t.hints,t.undos,t.score)]);

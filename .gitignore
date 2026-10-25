@@ -1,0 +1,30 @@
+node_modules/
+output/
+.playwright-cli/
+project.private.config.json
+
+.data/
+sites-app/node_modules/
+sites-app/dist/
+sites-app/.wrangler/
+sites-app/.sites-runtime/
+sites-app/.vinext/
+
+# Local credentials and machine state
+.env*
+.dev.vars*
+*.pem
+*.key
+*.p12
+*.pfx
+*.log
+.DS_Store
+coverage/
+
+# Historical prototypes and replaced AI artwork
+archive/
+assets/editions/
+assets/posters/
+assets/retro/
+assets/themes/
+assets/ink/

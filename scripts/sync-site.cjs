@@ -1,0 +1,6 @@
+const fs=require('node:fs'),path=require('node:path'),root=path.resolve(__dirname,'..'),site=path.join(root,'sites-app'),dest=path.join(site,'public','game');
+const themes=require('../shared/themes.js').THEMES;
+const files=['index.html',...['blocks','themes','retro','ink','studio-view','studio','postcard'].map(n=>`shared/${n}.js`),...['app.js','style.css','hub.js','hub.css','icon.svg'].map(n=>'web/'+n),'assets/museum/manifest.json','assets/museum/LICENSES.md',...themes.flatMap(t=>t.arts.map(a=>a.file))];
+for(const file of files){const target=path.join(dest,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(root,file),target);}
+fs.mkdirSync(path.join(site,'lib'),{recursive:true});fs.copyFileSync(path.join(root,'web/icon.svg'),path.join(site,'public/favicon.svg'));
+require(path.join(site,'node_modules/esbuild')).build({stdin:{contents:"import api from './server/api.cjs'; export const createAPI=api.createAPI;",resolveDir:root,loader:'js'},bundle:true,format:'esm',platform:'browser',outfile:path.join(site,'lib/ranking-service.mjs')}).then(()=>console.log('Synced',files.length,'game files and the server replay engine.')).catch(e=>{console.error(e.message);process.exitCode=1;});

@@ -1,0 +1,30 @@
+async(page)=>{
+ const assert=(v,s)=>{if(!v)throw new Error(s);},errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.setViewportSize({width:390,height:844});await page.goto('http://127.0.0.1:4186/#game');await page.evaluate(()=>Object.keys(localStorage).filter(k=>k.startsWith('ink-studio:')).forEach(k=>localStorage.removeItem(k)));await page.reload();await page.waitForTimeout(500);
+ let s=await page.evaluate(()=>window.inkGame.snapshot());assert(s.status==='playing','immediate play');assert(s.board.flat().every(v=>!v),'empty start');const initialArt=s.config.art;
+ await page.screenshot({path:'output/playwright/ink-start.png'});
+ const box=await page.locator('#game-surface').boundingBox(),scale=box.width/390,b=s.layout.board,slot=s.layout.slots[0],shape=await page.evaluate(()=>new Ink.Game({state:window.inkGame.snapshot()}).getShape(0));
+ await page.mouse.move(box.x+(slot.x+55)*scale,box.y+s.layout.trayY*scale);await page.mouse.down();await page.mouse.move(box.x+(b.x+shape.w/2*b.cell)*scale,box.y+(b.y+shape.h/2*b.cell+25)*scale,{steps:10});await page.mouse.up();s=await page.evaluate(()=>window.inkGame.snapshot());assert(s.repairedCount===0&&s.stamps===0&&s.moves===1,'first drag builds board without free clear');await page.waitForTimeout(850);await page.screenshot({path:'output/playwright/ink-repair.png'});
+ await page.reload();s=await page.evaluate(()=>window.inkGame.snapshot());assert(s.repairedCount===0&&s.moves===1&&s.board.flat().some(Boolean),'empty-start session resumes');
+ await page.getByRole('button',{name:'撤回 2',exact:true}).focus();await page.keyboard.press('Enter');assert((await page.evaluate(()=>window.inkGame.snapshot())).repairedCount===0,'undo painting');
+ // Legal keyboard events, using a read-only board snapshot to plan moves.
+ async function solve(){return await page.evaluate(()=>{const press=key=>window.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true,cancelable:true}));const start=window.inkGame.snapshot();let plan=null;for(const noise of [0,12,45,75,120,180,250,350,500,750,-45,-100]){const sim=new Ink.Game({state:start}),moves=[];while(sim.status==='playing'&&moves.length<65){const m=Ink.bestMove(sim,noise);if(!m)break;moves.push(m);sim.place(m.index,m.row,m.col);}if(sim.status==='won'){plan=moves;break;}}if(!plan)throw new Error('no legal plan');for(const move of plan){press('Escape');press(String(move.index+1));for(let n=0;n<move.row;n++)press('ArrowDown');for(let n=0;n<move.col;n++)press('ArrowRight');press(' ');}const s=window.inkGame.snapshot();return{status:s.status,moves:s.moves,art:s.config.art,level:s.config.level};});}
+ let first=await solve();assert(first.status==='won','first win');await page.screenshot({path:'output/playwright/ink-complete.png'});
+ const download=page.waitForEvent('download');await page.getByRole('button',{name:'存为画签',exact:true}).focus();await page.keyboard.press('Enter');const file=await download;await file.saveAs('output/playwright/ink-postcard.png');
+ // Clear all 18 chapters in standard difficulty, without writing progress.
+ const results=[first];for(const art of [initialArt,...[0,1,2].filter(a=>a!==initialArt)]){
+  if(art===initialArt){await page.getByRole('button',{name:'下一幅细节',exact:true}).focus();await page.keyboard.press('Enter');}
+  else{await page.getByRole('button',{name:'画册',exact:true}).focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:InkName(art)+' 第1关',exact:true}).focus();await page.keyboard.press('Enter');}
+  for(let level=art===initialArt?1:0;level<6;level++){const r=await solve();assert(r.status==='won',`chapter ${art}/${level}: ${JSON.stringify(r)}`);results.push(r);if(level<5){await page.getByRole('button',{name:'下一幅细节',exact:true}).focus();await page.keyboard.press('Enter');}}
+ }
+ function InkName(a){return['咸鱼度假','摸鱼现场','慢点也行'][a];}
+ await page.getByRole('button',{name:'画册',exact:true}).focus();await page.keyboard.press('Enter');await page.screenshot({path:'output/playwright/ink-album.png'});
+ await page.getByRole('button',{name:'摸鱼现场 第1关',exact:true}).focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:'大师',exact:true}).focus();await page.keyboard.press('Enter');s=await page.evaluate(()=>window.inkGame.snapshot());assert(s.config.difficulty===2&&s.ink.seals.flat().some(Boolean),'master rule');await page.screenshot({path:'output/playwright/ink-master.png'});const hard=await solve(75);assert(hard.status==='won','master solve');
+ await page.getByRole('button',{name:'画册',exact:true}).focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:/今日同题/}).focus();await page.keyboard.press('Enter');s=await page.evaluate(()=>window.inkGame.snapshot());assert(s.config.date,'daily');const daily=await solve();assert(daily.status==='won','daily solved');
+ await page.reload();s=await page.evaluate(()=>window.inkGame.snapshot());assert(Object.keys(s.book).length>=18,'persistent album');
+ await page.getByRole('button',{name:'画册',exact:true}).focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:'咸鱼度假 第1关',exact:true}).focus();await page.keyboard.press('Enter');
+ await page.getByRole('button',{name:'轻松',exact:true}).focus();await page.keyboard.press('Enter');s=await page.evaluate(()=>window.inkGame.snapshot());assert(s.config.budget===null&&s.undoLeft===3,'easy rules');await page.getByRole('button',{name:'提示 3',exact:true}).focus();await page.keyboard.press('Enter');s=await page.evaluate(()=>window.inkGame.snapshot());assert(s.selected!==null&&s.hintsLeft===2,'hint action');
+ for(const[width,height]of [[320,568],[375,667],[390,844],[430,932],[1440,1080]]){await page.setViewportSize({width,height});await page.waitForTimeout(80);s=await page.evaluate(()=>window.inkGame.snapshot());assert(s.buttons.every(b=>b.y>=0&&b.y+b.h<=s.layout.h+.5),'button overflow '+width);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'width overflow');}
+ await page.setViewportSize({width:390,height:844});assert(!errors.length,errors.join(','));return{chapters:results.length,master:hard,daily,errors,export:'720x940 PNG'};
+}
+
