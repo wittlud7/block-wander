@@ -1,12 +1,12 @@
 {
   "name": "block-wander",
-  "version": "8.0.0",
+  "version": "9.0.0",
   "private": true,
   "description": "方块漫游 · 六种主题、公版馆藏与无尽挑战、每日同题与真实排行榜",
   "scripts": {
     "start": "node scripts/server.cjs",
-    "test": "node --test tests/blocks.test.cjs tests/retro.test.cjs tests/ink.test.cjs tests/studio.test.cjs tests/ranking.test.cjs tests/endless.test.cjs",
-    "check": "node --check shared/ink.js && node --check shared/studio.js && node --check shared/studio-view.js && node --check shared/postcard.js && node --check web/app.js && node --check game.js && node --check shared/themes.js && node --check shared/ranking.js && node --check web/hub.js && node --check server/api.cjs",
+    "test": "node --test tests/blocks.test.cjs tests/retro.test.cjs tests/ink.test.cjs tests/studio.test.cjs tests/ranking.test.cjs tests/endless.test.cjs tests/native-hub.test.cjs",
+    "check": "node --check shared/ink.js && node --check shared/studio.js && node --check shared/studio-view.js && node --check shared/postcard.js && node --check web/app.js && node --check game.js && node --check shared/themes.js && node --check shared/ranking.js && node --check web/hub.js && node --check server/api.cjs && node --check shared/native-hub.js",
     "balance": "node scripts/check-ink.cjs",
     "release": "node scripts/release.cjs",
     "site:sync": "node scripts/sync-site.cjs",

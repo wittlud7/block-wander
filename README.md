@@ -1,5 +1,7 @@
 # 方块漫游
 
+自写代码采用 MIT 许可；真实馆藏图像采用 CC0，第三方代码保留原许可。详见 [LICENSE](LICENSE) 与 [NOTICE](NOTICE.md)。
+
 艺术闯关、无尽挑战、每日同题。空棋盘开局，填满整行或整列即可消除。
 
 ## 运行与检查
@@ -45,10 +47,10 @@ npm --prefix sites-app run build
 npm run release
 ```
 
-同步包含网页、共享规则、18幅馆藏和许可清单。旧AI素材在开发档案中保留，但不进入当前Sites发布或v8源码包。源码包为 `output/release/block-wander-v8.zip`，排除依赖、构建缓存、本机数据、凭证与Git元数据。GitHub交付使用独立源码仓库，保留Sites项目的构建源。
+同步包含网页、共享规则、18幅馆藏和许可清单。旧AI素材在开发档案中保留，但不进入当前Sites发布或v9源码包。源码包为 `output/release/block-wander-v9.zip`，排除依赖、构建缓存、本机数据、凭证与Git元数据。GitHub交付使用独立源码仓库，保留Sites项目的构建源。
 
 [发布和数据库说明](docs/DEPLOYMENT.md) · [设计说明](docs/DESIGN.md) · [验证记录](docs/VALIDATION.md)
 
-微信原生入口共用引擎和馆藏资源，当前为章节开发预览，尚不能作为完整微信正式版提交。运行 `npm run wechat:pack` 可生成独立开发包；首页、无尽入口、微信身份和排行榜仍需适配。
+微信手机原生入口已接入首页、六类作品/108关、难度选择、无尽和积分换块、收藏导出、设置与本机每日纪录。运行 `npm run wechat:pack` 生成约3.32MB开发包。当前尚未接入微信登录与在线排名，也没有完成微信开发者工具或真机验收，不能直接宣称可提审。
 
-[当前上线评估与微信路线](docs/RELEASE-READINESS.md) · 代码暂未指定开源许可证；馆藏图像的CC0许可独立。
+[微信开发与验收说明](docs/WECHAT.md) · [当前上线评估](docs/RELEASE-READINESS.md)

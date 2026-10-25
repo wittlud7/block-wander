@@ -1,7 +1,7 @@
 const fs=require('node:fs'),path=require('node:path');
-const root=path.resolve(__dirname,'..'),out=path.join(root,'output','release'),name='block-wander-v8',dest=path.join(out,name);
+const root=path.resolve(__dirname,'..'),out=path.join(root,'output','release'),name='block-wander-v9',dest=path.join(out,name);
 const themes=require('../shared/themes.js').THEMES;
-const roots=['.github','index.html','package.json','.gitignore','README.md','game.js','game.json','project.config.json','web','shared','server','tests','docs','scripts','sites-app'];
+const roots=['.github','index.html','package.json','.gitignore','LICENSE','NOTICE.md','README.md','game.js','game.json','project.config.json','web','shared','server','tests','docs','scripts','sites-app'];
 const skipped=new Set(['node_modules','dist','.git','.data','.wrangler','.sites-runtime','.vinext','.next','.playwright-cli','output','outputs']);
 const files=[];function collect(relative){const absolute=path.join(root,relative),stat=fs.statSync(absolute);if(stat.isDirectory()){for(const entry of fs.readdirSync(absolute))if(!skipped.has(entry)&&!entry.startsWith('.env')&&!entry.startsWith('.dev.vars')&&!entry.endsWith('.tsbuildinfo'))collect(relative+'/'+entry);}else files.push(relative);}
 roots.forEach(collect);files.push('assets/museum/manifest.json','assets/museum/LICENSES.md',...themes.flatMap(t=>t.arts.map(a=>a.file)));
